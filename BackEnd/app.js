@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const app = express();
 
 //importation des routes
+const stuffRoutes = require('./routes/stuff');
 const userRoutes = require('./routes/user');
 
 mongoose.connect('mongodb+srv://utilisateur-test:utilisateur-test@cluster0.yxicz2r.mongodb.net/?retryWrites=true&w=majority')
@@ -18,6 +19,7 @@ app.use((req, res, next) => { //Ajout de headers pour gerer les erreurs CORS et 
     next();
 });
 
+app.use('/api/books', stuffRoutes);
 app.use('/api/auth', userRoutes);
 
 module.exports = app;
