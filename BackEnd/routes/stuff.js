@@ -9,4 +9,6 @@ router.get('/', auth, stuffCtrl.getAllBooks);
 
 router.get('/:id', auth, stuffCtrl.getOneBook);
 
+router.put('/:id', auth, stuffCtrl.modifyBook);
+
 module.exports = router;
