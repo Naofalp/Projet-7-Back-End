@@ -13,6 +13,7 @@ exports.getOneBook = (req, res, next) => {
 };
 
 exports.createBook = (req, res, next) => {
+    console.log(req.body);
     delete req.body._id; //pas besoin car déjà créer par mongodb
     const book = new Book({
         ...req.body // spread "..." est utilisé pour faire une copie de tous les éléments de req.body
