@@ -13,15 +13,19 @@ exports.getOneBook = (req, res, next) => {
 };
 
 exports.createBook = (req, res, next) => {
-    console.log(req.body);
-    delete req.body._id; //pas besoin car déjà créer par mongodb
+    const bookObject = JSON.parse(req.body.book);
+    delete bookObject._id;
+    delete bookObject._userId; // peut pas faire confiance: le client peut usurper l'iD d'un autre
     const book = new Book({
-        ...req.body // spread "..." est utilisé pour faire une copie de tous les éléments de req.body
+        ...bookObject,
+        userId: req.auth.userId, //userId fourni par auth
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     });
-    book.save() //save() qui enregistre dans la BDD et renvoie une promise.
-        .then(() => res.status(201).json({ message: 'Objet enregistré !' }))
-        .catch(error => res.status(400).json({ error }));
-};
+  
+    book.save()
+    .then(() => { res.status(201).json({message: 'Objet enregistré !'})})
+    .catch(error => { res.status(400).json( { error })})
+ };
 
 exports.modifyBook = (req, res, next) => {
     Book.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })

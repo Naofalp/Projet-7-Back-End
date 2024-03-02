@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-
 const auth = require('../middleware/auth');
+const multer = require('../middleware/multer-config');
+
 const stuffCtrl = require('../controllers/stuff');
 
 
@@ -11,7 +12,7 @@ router.get('/:id', stuffCtrl.getOneBook);
 
 //GET pas besoin d'être auth; '/bestrating'
 
-router.post('/', auth, stuffCtrl.createBook);
+router.post('/', auth, multer, stuffCtrl.createBook);
 
 router.put('/:id', auth, stuffCtrl.modifyBook);
 
