@@ -12,6 +12,16 @@ exports.getOneBook = (req, res, next) => {
         .catch(error => res.status(404).json({ error }));
 };
 
+exports.createBook = (req, res, next) => {
+    delete req.body._id; //pas besoin car déjà créer par mongodb
+    const book = new Book({
+        ...req.body // spread "..." est utilisé pour faire une copie de tous les éléments de req.body
+    });
+    book.save() //save() qui enregistre dans la BDD et renvoie une promise.
+        .then(() => res.status(201).json({ message: 'Objet enregistré !' }))
+        .catch(error => res.status(400).json({ error }));
+};
+
 exports.modifyBook = (req, res, next) => {
     Book.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
         .then(() => res.status(200).json({ message: 'Objet modifié !' }))
