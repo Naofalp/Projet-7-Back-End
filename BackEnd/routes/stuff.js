@@ -11,4 +11,9 @@ router.get('/:id', auth, stuffCtrl.getOneBook);
 
 router.put('/:id', auth, stuffCtrl.modifyBook);
 
+router.delete('/:id', auth, stuffCtrl.deleteBook);
+
+
+
+
 module.exports = router;
