@@ -1,25 +1,25 @@
 const Book = require('../models/book');
 
 exports.getAllBooks = (req, res, next) => {
-    Thing.find()
-        .then(things => res.status(200).json(things))
+    Book.find()
+        .then(books => res.status(200).json(books))
         .catch(error => res.status(400).json({ error }));
 };
 
 exports.getOneBook = (req, res, next) => {
-    Thing.findOne({ _id: req.params.id })
-        .then(thing => res.status(200).json(thing))
+    Book.findOne({ _id: req.params.id })
+        .then(book => res.status(200).json(book))
         .catch(error => res.status(404).json({ error }));
 };
 
 exports.modifyBook = (req, res, next) => {
-    Thing.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
+    Book.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
         .then(() => res.status(200).json({ message: 'Objet modifié !' }))
         .catch(error => res.status(400).json({ error }));
 };
 
 exports.deleteBook = (req, res, next) => {
-    Thing.deleteOne({ _id: req.params.id })
+    Book.deleteOne({ _id: req.params.id })
         .then(() => res.status(200).json({ message: 'Objet supprimé !' }))
         .catch(error => res.status(400).json({ error }));
 };
