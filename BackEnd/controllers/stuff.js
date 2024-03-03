@@ -67,3 +67,46 @@ exports.deleteBook = (req, res, next) => {
             res.status(500).json({ error });
         });
 };
+
+exports.createRating = (req, res, next) => {
+    if (0 <= req.body.rating <= 5) {
+        const ratingObject = { ...req.body, grade: req.body.rating };
+        delete ratingObject._id;
+        Book.findOne({ _id: req.params.id }) // Récupération du livre auquel on veut ajouter une note
+            .then(book => {
+                const newRatings = book.ratings;
+                const userIdArray = newRatings.map(rating => rating.userId); // on cherche les user ayant déjà noté le livre
+
+                if (userIdArray.includes(req.auth.userId)) { // On vérifie que l'utilisateur ne donne pas plusieurs notations au même livre
+                    res.status(403).json({ message: 'Not authorized' });
+                }
+                else {
+                    newRatings.push(ratingObject); // Ajout de la note et de l'userId
+                    const grades = newRatings.map(rating => rating.grade); //tableau des notes
+                    const averageGrades = calculateAverage(grades);
+
+                    Book.updateOne({ _id: req.params.id }, { ratings: newRatings, averageRating: averageGrades, _id: req.params.id })
+                        .then(() => { res.status(201).json() })
+                        .catch(error => { res.status(400).json({ error }) });
+                    res.status(200).json(book);
+                }
+            })
+            .catch((error) => {
+                res.status(404).json({ error });
+            });
+    } else {
+        res.status(400).json({ message: 'La note doit être comprise entre 1 et 5' });
+    }
+};
+
+// Fonction pour calculer la moyenne des grades
+const calculateAverage = (grades) => {
+    if (grades.length === 0) {
+        return 0; // Retourne 0 si le tableau est vide pour éviter une division par zéro
+    }
+    
+    const sum = grades.reduce((acc, grade) => acc + grade, 0); // Calcule la somme des notes
+    const average = sum / grades.length; // Calcule la moyenne en divisant la somme par le nombre total de notes
+    return average;
+};
+

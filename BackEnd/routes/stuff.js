@@ -18,7 +18,7 @@ router.put('/:id', auth, multer, stuffCtrl.modifyBook);
 
 router.delete('/:id', auth, stuffCtrl.deleteBook);
 
-//POST '/:id/rating' 
+router.post('/:id/rating', auth, stuffCtrl.createRating);
 
 
 
