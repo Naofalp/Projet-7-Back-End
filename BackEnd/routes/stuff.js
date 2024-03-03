@@ -12,7 +12,7 @@ router.get('/:id', stuffCtrl.getOneBook);
 
 //GET pas besoin d'être auth; '/bestrating'
 
-router.post('/', auth, multer, stuffCtrl.createBook);
+router.post('/', auth, multer, stuffCtrl.createBook); //Multer APRES auth pour s'assurer 
 
 router.put('/:id', auth, multer, stuffCtrl.modifyBook);
 

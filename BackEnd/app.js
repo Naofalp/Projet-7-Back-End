@@ -22,6 +22,6 @@ app.use((req, res, next) => { //Ajout de headers pour gerer les erreurs CORS et 
 
 app.use('/api/books', stuffRoutes);
 app.use('/api/auth', userRoutes);
-app.use('/images', express.static(path.join(__dirname, 'images'))); //routage pour l'affichage image
+app.use('/images', express.static(path.join(__dirname, 'images'))); //routage pour l'affichage et avoir l'accés aux image
 
 module.exports = app;
