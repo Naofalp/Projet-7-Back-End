@@ -10,7 +10,7 @@ router.get('/', stuffCtrl.getAllBooks);
 
 router.get('/:id', stuffCtrl.getOneBook);
 
-router.get('/bestrating', stuffCtrl.getBestRating)
+router.get('/bestrating', stuffCtrl.getBestRating);
 
 router.post('/', auth, multer, stuffCtrl.createBook); //Multer APRES auth pour s'assurer 
 

@@ -80,7 +80,7 @@ exports.createRating = (req, res, next) => {
         delete ratingObject._id;
         Book.findOne({ _id: req.params.id }) // Récupération du livre auquel on veut ajouter une note
             .then(book => {
-                const newRatings = book.rating;
+                const newRatings = book.ratings;
                 const userIdArray = newRatings.map(rating => rating.userId); // on cherche les user ayant déjà noté le livre
 
                 if (userIdArray.includes(req.auth.userId)) { // On vérifie que l'utilisateur ne donne pas plusieurs notations au même livre
@@ -91,7 +91,7 @@ exports.createRating = (req, res, next) => {
                     const grades = newRatings.map(rating => rating.grade); //tableau des notes
                     const averageGrades = calculateAverage(grades);
 
-                    Book.updateOne({ _id: req.params.id }, { rating: newRatings, averageRating: averageGrades, _id: req.params.id })
+                    Book.updateOne({ _id: req.params.id }, { ratings: newRatings, averageRating: averageGrades, _id: req.params.id })
                         .then(() => { res.status(201).json() })
                         .catch(error => { res.status(400).json({ error }) });
                     res.status(200).json(book);
