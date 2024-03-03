@@ -12,6 +12,12 @@ exports.getOneBook = (req, res, next) => {
         .catch(error => res.status(404).json({ error }));
 };
 
+exports.getBestRating = (req, res, next) => {
+    Book.find().sort({ averageRating: -1 }).limit(3) //Comme getAllBooks sauf qu'on trien decroissant + on limite a 3 le nombre de doc retournés.
+        .then((books) => res.status(200).json(books))
+        .catch((error) => res.status(404).json({ error }));
+};
+
 exports.createBook = (req, res, next) => {
     const bookObject = JSON.parse(req.body.book);
     delete bookObject._id;
@@ -104,7 +110,7 @@ const calculateAverage = (grades) => {
     if (grades.length === 0) {
         return 0; // Retourne 0 si le tableau est vide pour éviter une division par zéro
     }
-    
+
     const sum = grades.reduce((acc, grade) => acc + grade, 0); // Calcule la somme des notes
     const average = sum / grades.length; // Calcule la moyenne en divisant la somme par le nombre total de notes
     return average;
