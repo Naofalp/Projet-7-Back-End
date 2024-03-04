@@ -14,11 +14,10 @@ const compress = async (req, res, next) => {
             .webp({ quality: 20 })
             .toFile(`images/${newFileName}`)
 
-        // Supprimer l'image originale
-        await fs.unlink(originalFilePath);
-        // Remplacer le chemin du fichier par le nouveau chemin
-        req.file.path = `images/${newFileName}`;
-        req.file.filename = newFileName;
+        await fs.unlink(originalFilePath); // Supprimer l'image originale
+
+        req.file.path = `images/${newFileName}`; // Remplacer le chemin du fichier par le nouveau chemin
+        req.file.filename = newFileName; // remplacer le nom car sinon le front cherche avec l'ancien nom
         req.file.mimetype = "image/webp"
         console.log("Original file path:", req.file.path);
         next();
