@@ -1,29 +1,31 @@
 const sharp = require('sharp');
-const fs = require('fs');
+const fs = require('fs').promises;
 
-const compress = (req, res, next) => {
+const compress = async (req, res, next) => {
     if (!req.file) {
         return next();
     }
 
     const originalFilePath = req.file.path;
     const originalname = req.file.filename;
-    const timestamp = new Date().toISOString();
-    const newFileName = `${timestamp}-${originalname}.webp`;
+    const newFileName = `resized_${originalname}.webp`;
+    try {
+        await sharp(originalFilePath)
+            .webp({ quality: 20 })
+            .toFile(`images/${newFileName}`)
 
-    sharp(req.file.path)
-        .webp({ quality: 20 })
-        .toFile(`images/${newFileName}`)
-        .then(() => {
-            fs.unlink(originalFilePath, () => { //suppression de l'original et remplacement par le redimensionné
-                req.file.path = newFileName;
-                next();
-            });
-        })
-        .catch(error => {
-            console.log(error);
-            return next();
-        });
+        // Supprimer l'image originale
+        await fs.unlink(originalFilePath);
+        // Remplacer le chemin du fichier par le nouveau chemin
+        req.file.path = `images/${newFileName}`;
+        req.file.filename = newFileName;
+        req.file.mimetype = "image/webp"
+        console.log("Original file path:", req.file.path);
+        next();
+    }
+    catch (error) {
+        return res.status(500).json({ message: 'Failed to compress image', error });
+    }
 };
 
 module.exports = compress;
