@@ -13,10 +13,15 @@ exports.getOneBook = (req, res, next) => {
         .catch(error => res.status(404).json({ error }));
 };
 
-exports.getBestRating = (req, res, next) => {
-    Book.find().sort({ averageRating: -1 }).limit(3) //Comme getAllBooks sauf qu'on trien decroissant + on limite a 3 le nombre de doc retournés.
-        .then((books) => res.status(200).json(books))
-        .catch((error) => res.status(500).json({ error }));
+exports.getBestRating = async (req, res, next) => {
+    try {
+        const topRatedBooks = await Book.find()
+            .sort({ averageRating: -1 })
+            .limit(3)
+        res.status(200).json(topRatedBooks)
+    } catch (error) {
+        res.status(500).json({ error: 'An error has occurred' })
+    }
 };
 
 exports.createBook = (req, res, next) => {
