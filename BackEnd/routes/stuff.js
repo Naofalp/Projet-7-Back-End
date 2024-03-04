@@ -8,17 +8,18 @@ const stuffCtrl = require('../controllers/stuff');
 
 router.get('/', stuffCtrl.getAllBooks);
 
+router.get('/bestrating', stuffCtrl.getBestRating); //bestRating renvoi un ObjectId invalide si APRES getOneBook
+
 router.get('/:id', stuffCtrl.getOneBook);
 
-router.get('/bestrating', stuffCtrl.getBestRating);
-
 router.post('/', auth, multer, stuffCtrl.createBook); //Multer APRES auth pour s'assurer 
+
+router.post('/:id/rating', auth, stuffCtrl.createRating);
 
 router.put('/:id', auth, multer, stuffCtrl.modifyBook);
 
 router.delete('/:id', auth, stuffCtrl.deleteBook);
 
-router.post('/:id/rating', auth, stuffCtrl.createRating);
 
 
 
