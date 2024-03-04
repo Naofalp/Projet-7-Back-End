@@ -1,4 +1,5 @@
 const Book = require('../models/book');
+const fs = require('fs');
 
 exports.getAllBooks = (req, res, next) => {
     Book.find()
@@ -15,13 +16,18 @@ exports.getOneBook = (req, res, next) => {
 exports.getBestRating = (req, res, next) => {
     Book.find().sort({ averageRating: -1 }).limit(3) //Comme getAllBooks sauf qu'on trien decroissant + on limite a 3 le nombre de doc retournés.
         .then((books) => res.status(200).json(books))
-        .catch((error) => res.status(404).json({ error }));
+        .catch((error) => res.status(500).json({ error }));
 };
 
 exports.createBook = (req, res, next) => {
     const bookObject = JSON.parse(req.body.book);
     delete bookObject._id;
     delete bookObject._userId; // peut pas faire confiance: le client peut usurper l'iD d'un autre
+
+    if (bookObject.ratings[0].grade === 0) {
+        bookObject.ratings = []
+    }
+
     const book = new Book({
         ...bookObject,
         userId: req.auth.userId, //userId fourni par auth
@@ -74,45 +80,36 @@ exports.deleteBook = (req, res, next) => {
         });
 };
 
-exports.createRating = (req, res, next) => {
-    if (0 <= req.body.rating <= 5) {
-        const ratingObject = { ...req.body, grade: req.body.rating };
-        delete ratingObject._id;
-        Book.findOne({ _id: req.params.id }) // Récupération du livre auquel on veut ajouter une note
-            .then(book => {
-                const newRatings = book.ratings;
-                const userIdArray = newRatings.map(rating => rating.userId); // on cherche les user ayant déjà noté le livre
-
-                if (userIdArray.includes(req.auth.userId)) { // On vérifie que l'utilisateur ne donne pas plusieurs notations au même livre
-                    res.status(403).json({ message: 'Not authorized' });
-                }
-                else {
-                    newRatings.push(ratingObject); // Ajout de la note et de l'userId
-                    const grades = newRatings.map(rating => rating.grade); //tableau des notes
-                    const averageGrades = calculateAverage(grades);
-
-                    Book.updateOne({ _id: req.params.id }, { ratings: newRatings, averageRating: averageGrades, _id: req.params.id })
-                        .then(() => { res.status(201).json() })
-                        .catch(error => { res.status(400).json({ error }) });
-                    res.status(200).json(book);
-                }
-            })
-            .catch((error) => {
-                res.status(404).json({ error });
-            });
-    } else {
-        res.status(400).json({ message: 'La note doit être comprise entre 1 et 5' });
-    }
-};
-
-// Fonction pour calculer la moyenne des grades
-const calculateAverage = (grades) => {
-    if (grades.length === 0) {
-        return 0; // Retourne 0 si le tableau est vide pour éviter une division par zéro
+exports.createRating = async (req, res, next) => {
+    // Check that the user has not already rated the book
+    const existingRating = await Book.findOne({
+        _id: req.params.id,
+        "ratings.userId": req.body.userId
+    })
+    if (existingRating) {
+        return res.status(400).json({ message: 'User has already rated this book' })
     }
 
-    const sum = grades.reduce((acc, grade) => acc + grade, 0); // Calcule la somme des notes
-    const average = sum / grades.length; // Calcule la moyenne en divisant la somme par le nombre total de notes
-    return average;
-};
+    // Check that the rating is a number between 0..5 included
+    if (!(req.body.rating >= 0) && !(req.body.rating <= 5) && (typeof req.body.rating === 'number')) {
+        return res.status(500).json({ message: 'Grade is not between 0 and 5 included or is not a number' })
+    }
 
+    try {
+        // Retrieves the book to rate according to the id of the request
+        const book = await Book.findOne({ _id: req.params.id })
+        if (!book) {
+            return res.status(404).json({ message: 'Book not found' })
+        }
+
+        // Add a new rating to the ratings array of the book
+        book.ratings.push({ userId: req.body.userId, grade: req.body.rating })
+
+        // Save the book to MongoDB, averageRating will be up to date on save
+        await book.save()
+        res.status(200).json(book)
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: 'An error has occurred' })
+    }
+};
