@@ -86,31 +86,23 @@ exports.deleteBook = (req, res, next) => {
 };
 
 exports.createRating = async (req, res, next) => {
-    // Check that the user has not already rated the book
-    const existingRating = await Book.findOne({
-        _id: req.params.id,
-        "ratings.userId": req.body.userId
-    })
+
+    const existingRating = await Book.findOne({ _id: req.params.id, "ratings.userId": req.body.userId })
     if (existingRating) {
-        return res.status(400).json({ message: 'User has already rated this book' })
+        return res.status(400).json({ message: 'Vous avez déjà noté ce livre' })
     }
 
-    // Check that the rating is a number between 0..5 included
     if (!(req.body.rating >= 0) && !(req.body.rating <= 5) && (typeof req.body.rating === 'number')) {
-        return res.status(500).json({ message: 'Grade is not between 0 and 5 included or is not a number' })
+        return res.status(500).json({ message: 'La note doit être comprise entre 1 et 5' })
     }
 
     try {
-        // Retrieves the book to rate according to the id of the request
         const book = await Book.findOne({ _id: req.params.id })
         if (!book) {
-            return res.status(404).json({ message: 'Book not found' })
+            return res.status(404).json({ message: 'Livre introuvable' })
         }
-
-        // Add a new rating to the ratings array of the book
-        book.ratings.push({ userId: req.body.userId, grade: req.body.rating })
-
-        // Save the book to MongoDB, averageRating will be up to date on save
+        
+        book.ratings.push({ userId: req.body.userId, grade: req.body.rating })// push la note dans le array rating
         await book.save()
         res.status(200).json(book)
     } catch (error) {
