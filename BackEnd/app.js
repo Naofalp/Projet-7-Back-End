@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 
-const helmet = require('helmet');
+const helmet = require('helmet'); // protege les headers. 
 app.use(helmet());
 
 //importation des routes
@@ -10,7 +10,11 @@ const stuffRoutes = require('./routes/stuff');
 const userRoutes = require('./routes/user');
 const path = require('path');
 
-mongoose.connect('mongodb+srv://utilisateur-test:utilisateur-test@cluster0.yxicz2r.mongodb.net/?retryWrites=true&w=majority')
+const dotenv = require('dotenv'); // sert a lire le dossier env.
+dotenv.config();
+const IDMONGODB = process.env.IDMONGODB //securité des identifants et mot de passes
+const PASSWORD = process.env.PASSWORD
+mongoose.connect(`mongodb+srv://${IDMONGODB}:${PASSWORD}@cluster0.yxicz2r.mongodb.net/?retryWrites=true&w=majority`)
     .then(() => console.log('Connexion à MongoDB réussie !'))
     .catch(() => console.log('Connexion à MongoDB échouée !'));
 
