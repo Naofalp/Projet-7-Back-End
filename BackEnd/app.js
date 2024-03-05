@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
+app.use(helmet());
 
 //importation des routes
 const stuffRoutes = require('./routes/stuff');
