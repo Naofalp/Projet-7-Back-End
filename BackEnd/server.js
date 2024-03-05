@@ -15,6 +15,7 @@ const normalizePort = val => {
     return false;
 };
 const port = normalizePort(process.env.PORT || '3002');
+console.log(`Your port is ${port}`);
 app.set('port', port); // on dit à l'application sur quel port tourner.
 
 const errorHandler = error => {
