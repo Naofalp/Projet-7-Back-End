@@ -11,6 +11,7 @@ const userSchema = mongoose.Schema({
       validator: function (value) {
         return /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/.test(value);
       },
+      //message a rajouter en front pour l'affichage client
       message: 'Votre mot de passe doit contenir au moins une majuscule, un caractère spécial, un chiffre et avoir une longueur minimale de 12 caractères.',
       errorCode: 555 // Code d'erreur personnalisé sinon 400 par defaut.
     }
