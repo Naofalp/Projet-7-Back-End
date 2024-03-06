@@ -5,9 +5,11 @@ const helmet = require('helmet'); // protege les headers.
 
 app.use(
     helmet({
-      crossOriginResourcePolicy: false,
+        crossOriginResourcePolicy: false,
     })
-  );
+);
+
+/* ERREUR HELMET https://stackoverflow.com/questions/69243166/err-blocked-by-response-notsameorigin-cors-policy-javascript */
 
 //importation des routes
 const stuffRoutes = require('./routes/stuff');
