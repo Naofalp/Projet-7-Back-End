@@ -1,6 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
+const helmet = require('helmet'); // protege les headers. 
+
+app.use(
+    helmet({
+      crossOriginResourcePolicy: false,
+    })
+  );
 
 //importation des routes
 const stuffRoutes = require('./routes/stuff');
