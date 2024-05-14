@@ -2,6 +2,9 @@ Projet 7 : Création du back-end d'un site de notation du livre
 
 Réalisé avec Node.JS, Express et MONGODB.
 
+Grâce aux routes de l'API, l'utilisateur peut rajouter  ou supprimer un livre, renseigner ses informations ou les modifier.
+Il peut egalement interferer avec les publications des autres en notant les livres, ce qui alimentera la rubriques "les mieux notés".
+
 Pour lancer la partie Front-End du site : 
 - se rendre dans le terminal Frontend et rentrer la commande npm run start.
 
