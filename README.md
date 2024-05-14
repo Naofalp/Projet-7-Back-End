@@ -1,5 +1,7 @@
 Projet 7 : Création du back-end d'un site de notation du livre 
 
+Réalisé avec Node.JS, Express et MONGODB.
+
 Pour lancer la partie Front-End du site : 
 - se rendre dans le terminal Frontend et rentrer la commande npm run start.
 
